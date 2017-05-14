@@ -2,7 +2,6 @@
 library(glmnet)
 
 
-
 #Elastic Netの関数
 elasticnet <- function(formula, data,
                        family = c("gaussian"),
