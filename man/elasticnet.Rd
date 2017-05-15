@@ -59,6 +59,11 @@ Step in searching for parameter alpha.
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
+
+\licence{
+MIT
+}
+
 \references{
 %% ~put references to the literature/web site here ~
 }
