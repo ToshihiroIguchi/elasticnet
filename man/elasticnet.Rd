@@ -21,7 +21,8 @@ alpha = NULL, alpha_step = 0.05)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{formula}{
+
+\item{formula}{
 an object of class "formula" : a symbolic description of the model to be fitted.
 }
 
@@ -75,14 +76,14 @@ Toshihiro Iguchi
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x)
-{
-  }
+%%##---- Should be DIRECTLY executable !! ----
+%%##-- ==>  Define data, use random,
+%%##--	or do  help(data=index)  for the standard data sets.
+%%
+%%## The function is currently defined as
+%%function (x)
+%%{
+%%  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
