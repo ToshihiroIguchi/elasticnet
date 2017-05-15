@@ -1,6 +1,4 @@
 #Elastic Net
-library(glmnet)
-
 
 #Elastic Netの関数
 elasticnet <- function(formula, data,
@@ -12,11 +10,6 @@ elasticnet <- function(formula, data,
                        alpha_step = 0.05){
   x <- model.matrix(formula,data=data)[,-1]
   y <- model.frame(formula,data=data)[,1]
-
-    offset <- model.offset(model.frame(formula, data = data, offset = offset))
-    #print(offset)
-
-
 
   df <- data.frame()
   ret <- list(formula =formula)
@@ -106,13 +99,8 @@ summary.elasticnet <- function(model){
   cat("\n\n")
 
   #係数を表示
-  coef_cat <- data.frame(as.matrix(coef(model$glmnet[[1]])))
+  coef_cat <- data.frame(as.matrix(coef(model$glmnet[[1]], s = model$lambda)))
   names(coef_cat) <- "Coefficients"
   print(coef_cat)
-}
-
-result <- function(){
-  result <- lm(Sepal~.,data, offset = 1)
-  return(class(offset))
 }
 
