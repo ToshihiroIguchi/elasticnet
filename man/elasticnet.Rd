@@ -60,9 +60,6 @@ Step in searching for parameter alpha.
 %% ...
 }
 
-\licence{
-MIT
-}
 
 \references{
 %% ~put references to the literature/web site here ~
