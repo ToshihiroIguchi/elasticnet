@@ -1,6 +1,6 @@
 Package: elasticnet
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Wrapper to use the glmnet package that Elastic Net model can be analyzed by the formula format.
 Version: 0.1.0
 Author: Toshihiro Iguchi
 Description: More about what it does (maybe more than one line)
