@@ -1,11 +1,11 @@
 Package: elasticnet
 Type: Package
-Title: Wrapper to use the glmnet package that Elastic Net model can be analyzed by the formula format.
+Title: What the Package Does (Title Case)
 Version: 0.1.0
 Author: Toshihiro Iguchi
 Maintainer: Toshihiro Iguchi
-Description: The glmnet package that Elastic Net can use is nice, 
-but you can not use the formula and you need to type it in matrix.
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
 License: MIT
 Encoding: UTF-8
 LazyData: true
