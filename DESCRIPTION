@@ -8,4 +8,3 @@ Description: Wrapper to use the glmnet package that Elastic Net model can be ana
 License: MIT
 Encoding: UTF-8
 LazyData: true
-Imports: glmnet
