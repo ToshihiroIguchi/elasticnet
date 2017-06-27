@@ -8,8 +8,16 @@ elasticnet <- function(formula, data,
                        lambda = "lambda.1se",
                        alpha = NULL,
                        alpha_step = 0.05){
+  #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
   x <- model.matrix(formula,data=data)[,-1]
+
+  #目的変数を指定。
   y <- model.frame(formula,data=data)[,1]
+
+  #offsetを指定。
+  #dataの変数を使用してoffsetの式で計算した結果を返す。
+  offset_su <- substitute(offset)
+  offset <- eval(offset_su, data)
 
   df <- data.frame()
   ret <- list(formula =formula)
