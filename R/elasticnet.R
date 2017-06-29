@@ -8,10 +8,15 @@ elasticnet <- function(formula, data,
                        lambda = "lambda.1se",
                        alpha = NULL,
                        alpha_step = 0.05){
+
+  #family=c("gaussian","binomial","poisson","multinomial"
+  #後で分布を自動判定するように変える。
+
   #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
   x <- model.matrix(formula,data=data)[,-1]
 
   #目的変数を指定。
+  #修正の余地があると思う。
   y <- model.frame(formula,data=data)[,1]
 
   #offsetを指定。
@@ -19,6 +24,7 @@ elasticnet <- function(formula, data,
   offset_su <- substitute(offset)
   offset <- eval(offset_su, data)
 
+  #最適なαを計算。
   df <- data.frame()
   ret <- list(formula =formula)
   i <- 1
@@ -41,6 +47,7 @@ elasticnet <- function(formula, data,
   ret$alpha_cvm <- df
   ret$best_num <- order(df[,2])[1]
   ret$lambda <- lambda
+  ret$family <- family
   class(ret) <- "elasticnet"
   return(ret)
 }
@@ -78,9 +85,33 @@ plot.elasticnet <- function(model){
   plot(model$alpha_cvm[,c(1:2)], type ="b")
   abline(v = model$alpha_cvm[model$best_num, 1], lty = 3)
   plot(model$glmnet[[model$best_num]])
-  calc <- model$glmnet[[model$best_num]]$fit.preval[,model$alpha_cvm$num[model$best_num]]
-  xy_data <- data.frame(calculation = calc, measure = model$ydata)
-  plot(xy_data)
+
+
+  if(model$family == "gaussian" || model$family == "poisson"){
+    #正規分布かポアソン分布の場合は回帰。それ以外は分類と判断。
+
+    #回帰のときの予測と実測の散布図
+    calc <- model$glmnet[[model$best_num]]$fit.preval[,model$alpha_cvm$num[model$best_num]]
+    xy_data <- data.frame(calculation = calc, measure = model$ydata)
+    plot(xy_data)
+
+  }else{
+    #分類の結果比較
+    #modelからcross varidation時のclassを出力。
+    cv_class <- function(model){
+      classnames <- model$glmnet[[model$best_num]]$glmnet.fit$classnames
+      cv_mat <- model$glmnet[[model$best_num]]$fit.preval[,,model$alpha_cvm$num[model$best_num]]
+      ret <- classnames[apply(cv_mat, 1, which.max)]
+      return(ret)
+    }
+    pre_class <- cv_class(model)
+
+    #モザイク図を出力。
+    mosaic_data <- data.frame(Predict = pre_class, Measure = model$ydata)
+    plot(~Predict + Measure, data = mosaic_data,
+         col = rainbow(length(unique(model$ydata))))
+  }
+
   par(mfrow = c(1, 1))
 }
 
@@ -107,8 +138,9 @@ summary.elasticnet <- function(model){
   cat("\n\n")
 
   #係数を表示
-  coef_cat <- data.frame(as.matrix(coef(model$glmnet[[1]], s = model$lambda)))
-  names(coef_cat) <- "Coefficients"
-  print(coef_cat)
+  coef(model$glmnet[[1]], s = model$lambda)
+  #coef_cat <- data.frame(as.matrix(coef(model$glmnet[[1]], s = model$lambda)))
+  #names(coef_cat) <- "Coefficients"
+  #print(coef_cat)
 }
 
