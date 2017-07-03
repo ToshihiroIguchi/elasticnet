@@ -2,22 +2,38 @@
 
 #Elastic Netの関数
 elasticnet <- function(formula, data,
-                       family = "gaussian",
+                       family = NULL,
                        offset = NULL,
                        nfolds = 5,
                        lambda = "lambda.1se",
                        alpha = NULL,
                        alpha_step = 0.05){
 
-  #family=c("gaussian","binomial","poisson","multinomial"
-  #後で分布を自動判定するように変える。
-
-  #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
+    #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
   x <- model.matrix(formula,data=data)[,-1]
 
   #目的変数を指定。
   #修正の余地があると思う。
   y <- model.frame(formula,data=data)[,1]
+
+  #familyを自動選択。
+  if(is.null(family)){
+    if(is.factor(y) || is.character(y)){
+      if(length(unique(y)) >= 3){family = "multinomial"}
+      if(length(unique(y)) == 2){family = "binomial"}
+      if(length(unique(y)) == 1){stop("The number of factors is one.")}
+    }
+    if(is.numeric(y) || is.integer(y)){
+      if(min(y) < 1){family = "gaussian"}
+      if(is.integer(y) && min(y) > 1){
+        family = "poisson"
+        }else{
+        family = "gaussian"
+      }
+    }
+  }
+  if(is.null(family)){stop("Family could not be selected automatically.
+                           Please specify family explicitly.")}
 
   #offsetを指定。
   #dataの変数を使用してoffsetの式で計算した結果を返す。
@@ -26,26 +42,66 @@ elasticnet <- function(formula, data,
 
   #最適なαを計算。
   df <- data.frame()
+  result <- NULL
   ret <- list(formula =formula)
   i <- 1
   a_seq <- if(is.null(alpha)){seq(0, 1, by = alpha_step)}else{alpha}
   for(a in a_seq){
-    result <- cv.glmnet(x = x, y = y, offset = offset,
+    result[[i]] <- cv.glmnet(x = x, y = y, offset = offset,
                         family = family, nfolds = nfolds,
                         alpha = a, keep = TRUE)
-    ret$glmnet[[i]] <- result; i <- i + 1
 
     num <- switch(lambda,
-                  "lambda.1se" = which(result$lambda == result$lambda.1se),
-                  "lambda.min" = which(result$lambda == result$lambda.min),
+                  "lambda.1se" = which(result[[i]]$lambda == result[[i]]$lambda.1se),
+                  "lambda.min" = which(result[[i]]$lambda == result[[i]]$lambda.min),
                   stop("Please select either lambda.1se or lambda.min."))
 
-    df0 <- data.frame(alpha = a, cvm = result$cvm[num] , num = num)
+    df0 <- data.frame(alpha = a, cvm = result[[i]]$cvm[num] , num = num)
     df <- rbind(df, df0)
+    i <- i + 1
   }
+
+  #メモリ開放
+  best_num <- order(df[,2])[1]
+  ret$glmnet <- result[[best_num]]
+  result <- NULL
+
+
+  #クロスバリデーションの結果保存
+
+  if(family == "gaussian" || family == "poisson"){
+    #正規分布かポアソン分布の場合は数値。
+    calc <- ret$glmnet$fit.preval[,df$num[best_num]]
+  }else{
+    if(family == "binomial"){
+      cv_class <- function(model){
+        classnames <- ret$glmnet$glmnet.fit$classnames
+        cv_mat <- ret$glmnet$fit.preval[,df$num[best_num]]
+        ret <- classnames[round(cv_mat, 0) + 1]
+        ret <- as.factor(ret)
+        return(ret)
+      }
+      calc <- cv_class(ret)
+    }
+    if(family == "multinomial"){
+      #多クラス分類の結果比較
+      #modelからcross varidation時のclassを出力。
+      cv_class <- function(model){
+        classnames <- ret$glmnet$glmnet.fit$classnames
+        cv_mat <- ret$glmnet$fit.preval[,,df$num[best_num]]
+        ret <- classnames[apply(cv_mat, 1, which.max)]
+        ret <- as.factor(ret)
+        return(ret)
+      }
+      calc <- cv_class(ret)
+    }
+  }
+
+  #戻り値を定義
   ret$ydata <- y
+  ret$calc <- calc
   ret$alpha_cvm <- df
-  ret$best_num <- order(df[,2])[1]
+  ret$best_num <- best_num
   ret$lambda <- lambda
   ret$family <- family
   class(ret) <- "elasticnet"
@@ -84,14 +140,12 @@ plot.elasticnet <- function(model){
   par(mfrow = c(1, 3))
   plot(model$alpha_cvm[,c(1:2)], type ="b")
   abline(v = model$alpha_cvm[model$best_num, 1], lty = 3)
-  plot(model$glmnet[[model$best_num]])
-
+  plot(model$glmnet)
 
   if(model$family == "gaussian" || model$family == "poisson"){
     #正規分布かポアソン分布の場合は回帰。
     #回帰のときの予測と実測の散布図
-    calc <- model$glmnet[[model$best_num]]$fit.preval[,model$alpha_cvm$num[model$best_num]]
-    xy_data <- data.frame(calculation = calc, measure = model$ydata)
+    xy_data <- data.frame(calculation = model$calc, measure = model$ydata)
     plot(xy_data)
 
     #詳細表示
@@ -99,29 +153,8 @@ plot.elasticnet <- function(model){
     legend("topleft", legend = rsq)
 
   }else{
-    if(model$family == "binomial"){
-      cv_class <- function(model){
-        classnames <- model$glmnet[[model$best_num]]$glmnet.fit$classnames
-        cv_mat <- model$glmnet[[model$best_num]]$fit.preval[,model$alpha_cvm$num[model$best_num]]
-        ret <- as.factor(classnames[round(cv_mat, 0) + 1])
-        return(ret)
-      }
-      pre_class <- cv_class(model)
-    }
-    if(model$family == "multinomial"){
-      #多クラス分類の結果比較
-      #modelからcross varidation時のclassを出力。
-      cv_class <- function(model){
-        classnames <- model$glmnet[[model$best_num]]$glmnet.fit$classnames
-        cv_mat <- model$glmnet[[model$best_num]]$fit.preval[,,model$alpha_cvm$num[model$best_num]]
-        ret <- classnames[apply(cv_mat, 1, which.max)]
-        return(ret)
-      }
-      pre_class <- cv_class(model)
-    }
-
     #モザイク図を出力。
-    mosaic_data <- data.frame(Predict = pre_class, Measure = model$ydata)
+    mosaic_data <- data.frame(Predict = model$calc, Measure = model$ydata)
     plot(~Predict + Measure, data = mosaic_data,
          col = rainbow(length(unique(model$ydata))))
   }
@@ -142,44 +175,23 @@ predict.elasticnet <- function(model, data){
 #Elastic Netのsummaryを表示
 summary.elasticnet <- function(model){
   #lambdaの選択方法、alpha、lambdaを表示
+  cat(paste0("Family is ", model$family)); cat("\n\n")
   cat(model$lambda); cat("\n\n")
   cat(paste("alpha = ", model$alpha_cvm[model$best_num, 1]), "\n", sep = "")
   cat("lambda = ")
   switch(model$lambda,
-         "lambda.1se" = cat(model$glmnet[[model$best_num]]$lambda.1se),
-         "lambda.min" = cat(model$glmnet[[model$best_num]]$lambda.min))
+         "lambda.1se" = cat(model$glmnet$lambda.1se),
+         "lambda.min" = cat(model$glmnet$lambda.min))
   cat("\n\n")
 
   #分類の場合、テーブル表示
   if(model$family == "multinomial" || model$family == "binomial"){
-    if(model$family == "binomial"){
-      cv_class <- function(model){
-        classnames <- model$glmnet[[model$best_num]]$glmnet.fit$classnames
-        cv_mat <- model$glmnet[[model$best_num]]$fit.preval[,model$alpha_cvm$num[model$best_num]]
-        ret <- as.factor(classnames[round(cv_mat, 0) + 1])
-        return(ret)
-      }
-      pre_class <- cv_class(model)
-    }
-
-    if(model$family == "multinomial"){
-      #多クラス分類の結果比較
-      #modelからcross varidation時のclassを出力。
-      cv_class <- function(model){
-        classnames <- model$glmnet[[model$best_num]]$glmnet.fit$classnames
-        cv_mat <- model$glmnet[[model$best_num]]$fit.preval[,,model$alpha_cvm$num[model$best_num]]
-        ret <- classnames[apply(cv_mat, 1, which.max)]
-        return(ret)
-      }
-      pre_class <- cv_class(model)
-    }
-
-    print(table(model$ydata, predict = pre_class))
+    print(table(model$ydata, predict = model$calc))
     cat("\n\n")
   }
 
   #係数を表示
-  coef(model$glmnet[[1]], s = model$lambda)
+  coef(model$glmnet, s = model$lambda)
 
 }
 
