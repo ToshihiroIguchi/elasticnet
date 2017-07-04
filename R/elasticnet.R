@@ -41,6 +41,7 @@ elasticnet <- function(formula, data,
   offset <- eval(offset_su, data)
 
   #最適なαを計算。
+  #forでかいたけど、applyで書いた方がRらしくていいかも。
   df <- data.frame()
   result <- NULL
   ret <- list(formula =formula)
@@ -109,12 +110,23 @@ elasticnet <- function(formula, data,
 }
 
 
+
+#elasticnet <- function(formula, data,
+#                       family = NULL,
+#                       offset = NULL,
+#                       nfolds = 5,
+#                       lambda = "lambda.1se",
+#                       alpha = NULL,
+#                       alpha_step = 0.05){
+
+
 #LASSOの関数
 lasso <- function(formula, data,
-                  family = c("gaussian"),
+                  family = NULL,
                   offset = NULL,
                   nfolds = 5,
                   lambda ="lambda.1se"){
+
   ret <- elasticnet(formula = formula, data = data,
                     family = family, offset = offset,
                     lambda = lambda, alpha = 1)
@@ -124,10 +136,11 @@ lasso <- function(formula, data,
 
 #Ridgeの関数
 ridge <- function(formula, data,
-                  family = c("gaussian"),
+                  family = NULL,
                   offset = NULL,
                   nfolds = 5,
                   lambda ="lambda.1se"){
+
   ret <- elasticnet(formula = formula, data = data,
                     family = family, offset = offset,
                     lambda = lambda, alpha = 0)

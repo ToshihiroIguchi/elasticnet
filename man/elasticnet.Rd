@@ -10,12 +10,11 @@ The glmnet package that Elastic Net can use is nice, but you can not use the for
 So we created an elasticnet package that Elastic Net can use in formula.
 This is a wrapper for the glmnet package, which requires the glmnet package to work.
 Also, the elasticnet package can automatically tune the best alpha and lambda.
-However, the elasticnet package is still alpha version and many bugs remain.
-So, please use it with care.
+
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-elasticnet(formula, data, family = "gaussian",
+elasticnet(formula, data, family = NULL,
 offset = NULL, nfolds = 5, lambda = "lambda.1se",
 alpha = NULL, alpha_step = 0.05)
 }
@@ -32,6 +31,8 @@ an optional data frame containing the variables in the model.
 
 \item{family}{
 Response type.
+Default is NULL.
+If NULL, family is automatically selected.
 }
 
 \item{lambda}{

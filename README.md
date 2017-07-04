@@ -6,8 +6,7 @@ The glmnet package that Elastic Net can use is nice, but you can not use the for
 So we created an elasticnet package that Elastic Net can use in formula.
 This is a wrapper for the glmnet package, which requires the glmnet package to work.
 Also, the elasticnet package can automatically tune the best alpha and lambda.
-However, the elasticnet package is still alpha version and many bugs remain.
-So, please use it with care.
+
 
 ### License 
 MIT
