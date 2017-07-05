@@ -111,15 +111,6 @@ elasticnet <- function(formula, data,
 
 
 
-#elasticnet <- function(formula, data,
-#                       family = NULL,
-#                       offset = NULL,
-#                       nfolds = 5,
-#                       lambda = "lambda.1se",
-#                       alpha = NULL,
-#                       alpha_step = 0.05){
-
-
 #LASSOの関数
 lasso <- function(formula, data,
                   family = NULL,
