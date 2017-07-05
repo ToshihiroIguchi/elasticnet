@@ -9,7 +9,7 @@ elasticnet <- function(formula, data,
                        alpha = NULL,
                        alpha_step = 0.05){
 
-    #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
+  #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
   x <- model.matrix(formula,data=data)[,-1]
 
   #目的変数を指定。
@@ -198,10 +198,31 @@ summary.elasticnet <- function(model){
          "lambda.min" = cat(model$glmnet$lambda.min))
   cat("\n\n")
 
-  #分類の場合、テーブル表示
+  #解析用データ
+  df <- data.frame(model$ydata, predict = model$calc)
+
+
   if(model$family == "multinomial" || model$family == "binomial"){
-    print(table(model$ydata, predict = model$calc))
-    cat("\n\n")
+    #分類の場合
+
+    #x[1],x[2]が同じ場合は1、それ以外はは0
+    counttrue <- function(x){
+      if(x[1] == x[2]){return(1)}else{return(0)}
+    }
+
+    #accuracyを計算
+    #正解の総数をデータ数で割る
+    accuracy <- sum(apply(df, 1, counttrue))/length(df[,1])
+    cat(paste0("Accuracy = ", accuracy)); cat("\n\n")
+
+    #テーブル表示
+    print(table(df)); cat("\n\n")
+
+  }else{
+    #回帰の場合
+    #RMSEを計算
+    rmse <- sum((df[,1] -df[,2])^2)/length(df[,1])
+    cat(paste0("RMSE = ", rmse)); cat("\n\n")
   }
 
   #係数を表示
