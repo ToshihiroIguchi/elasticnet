@@ -10,7 +10,7 @@ Also, the elasticnet package can automatically tune the best alpha and lambda.
 ### Installation
 You can install from R console.
 
-If 'devtools' is not installed on your PC, install 'devtools' with Internet connection.
+If "devtools is not installed on your PC, install "devtools" with Internet connection.
 
     install.packages("devtools")
 
@@ -19,6 +19,9 @@ Install from GitHub using 'devtools'.
     library(devtools)
     install_github("ToshihiroIguchi/elasticnet")
 
+Load the elasticnet package and attach it.
+
+    library(elasticnet)
 
 
 ### License 
