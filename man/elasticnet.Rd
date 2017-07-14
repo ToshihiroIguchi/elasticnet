@@ -79,6 +79,9 @@ Toshihiro Iguchi
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+result <- elasticnet(Sepal.Length ~., iris)
+plot(result)
+summary(result)
 %%##---- Should be DIRECTLY executable !! ----
 %%##-- ==>  Define data, use random,
 %%##--	or do  help(data=index)  for the standard data sets.
