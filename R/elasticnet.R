@@ -153,6 +153,7 @@ plot.elasticnet <- function(model, font.size = 20){
     par(mfrow = c(1, 2), ps = font.size)
   }
 
+
   #glmnetの最適なlambda計算の結果
   plot(model$glmnet)
 
