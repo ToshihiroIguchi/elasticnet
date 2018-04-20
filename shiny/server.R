@@ -4,6 +4,7 @@ source(file.path("../R","elasticnet.R"))
 #shiny用の関数読み込み
 source("shiny_elasticnet.R")
 
+
 server <- function(input, output, session) {
   observeEvent(input$file, {
     #テーブルにて表示

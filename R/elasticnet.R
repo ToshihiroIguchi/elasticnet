@@ -1,5 +1,6 @@
 #Elastic Net
 
+
 #Elastic Netの関数
 elasticnet <- function(formula, data,
                        family = NULL,
