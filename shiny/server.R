@@ -16,6 +16,7 @@ server <- function(input, output, session) {
     })
   })
 
+
   observeEvent(input$ydata, {
     csv_file <- reactive({read.csv(input$file$datapath)})
     #説明変数を選択
