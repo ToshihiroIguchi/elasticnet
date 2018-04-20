@@ -44,6 +44,7 @@ server <- function(input, output, session) {
 
     csv_file <- reactive({read.csv(input$file$datapath)})
 
+    #Elastic Netの計算
     result <- reactive({elasticnet(chr2formula(y = input$ydata, x= input$xdata),
                                data = csv_file(),
                                lambda = input$lambda,
@@ -51,14 +52,12 @@ server <- function(input, output, session) {
                                )
       })
 
-    output$plot <- renderPlot({plot(result())})
+    #結果のプロット
+    output$plot <- renderPlot({plot(result(), font.size = input$font.size)})
 
+    #結果の表示
     output$sum <- renderPrint({summary(result())})
-
-
-
   })
-
 }
 
 

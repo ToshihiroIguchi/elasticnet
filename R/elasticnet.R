@@ -141,10 +141,19 @@ ridge <- function(formula, data,
 
 
 #Elastic Netをplot関数で表示
-plot.elasticnet <- function(model){
-  par(mfrow = c(1, 3))
-  plot(model$alpha_cvm[,c(1:2)], type ="b")
-  abline(v = model$alpha_cvm[model$best_num, 1], lty = 3)
+plot.elasticnet <- function(model, font.size = 20){
+
+  if(length(model$alpha_cvm[, 1]) > 1){
+    #alpha vs cvmの結果表示
+    par(mfrow = c(1, 3), ps = font.size)
+    plot(model$alpha_cvm[,c(1:2)], type ="b")
+    abline(v = model$alpha_cvm[model$best_num, 1], lty = 3)
+
+  }else{
+    par(mfrow = c(1, 2), ps = font.size)
+  }
+
+  #glmnetの最適なlambda計算の結果
   plot(model$glmnet)
 
   if(model$family == "gaussian" || model$family == "poisson"){
@@ -183,11 +192,11 @@ summary.elasticnet <- function(model){
   #lambdaの選択方法、alpha、lambdaを表示
   cat(paste0("Family is ", model$family)); cat("\n\n")
   cat(model$lambda); cat("\n\n")
-  cat(paste("alpha = ", model$alpha_cvm[model$best_num, 1]), "\n", sep = "")
+  cat(paste("alpha = ", format(model$alpha_cvm[model$best_num, 1], digits = 4)), "\n", sep = "")
   cat("lambda = ")
   switch(model$lambda,
-         "lambda.1se" = cat(model$glmnet$lambda.1se),
-         "lambda.min" = cat(model$glmnet$lambda.min))
+         "lambda.1se" = cat(format(model$glmnet$lambda.1se, digits = 4)),
+         "lambda.min" = cat(format(model$glmnet$lambda.min, digits = 4)))
   cat("\n\n")
 
   #解析用データ
@@ -205,7 +214,7 @@ summary.elasticnet <- function(model){
     #accuracyを計算
     #正解の総数をデータ数で割る
     accuracy <- sum(apply(df, 1, counttrue))/length(df[,1])
-    cat(paste0("Accuracy = ", accuracy)); cat("\n\n")
+    cat(paste0("Accuracy = ", format(accuracy, digits = 4))); cat("\n\n")
 
     #テーブル表示
     print(table(df)); cat("\n\n")
@@ -214,7 +223,7 @@ summary.elasticnet <- function(model){
     #回帰の場合
     #RMSEを計算
     rmse <- sum((df[,1] -df[,2])^2)/length(df[,1])
-    cat(paste0("RMSE = ", rmse)); cat("\n\n")
+    cat(paste0("RMSE = ", format(rmse, digits = 4))); cat("\n\n")
   }
 
   #係数を表示

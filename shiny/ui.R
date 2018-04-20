@@ -3,7 +3,7 @@ library(glmnet)
 
 shinyUI(
   fluidPage(
-    titlePanel("Elastic Net"),
+    titlePanel("Elastic Net, LASSO, Ridge"),
     sidebarLayout(
       sidebarPanel(
         fileInput("file", "Choose csv file",
@@ -28,7 +28,10 @@ shinyUI(
                     tabPanel("Table", tableOutput('table')),
                     tabPanel("Result",
                              plotOutput("plot"),
-                             verbatimTextOutput("sum"))
+                             verbatimTextOutput("sum"),
+                             sliderInput("font.size", "Font size",
+                                         min = 5, max = 30, value = 18)
+                             )
 
         )
       )
