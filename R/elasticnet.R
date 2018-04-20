@@ -163,6 +163,7 @@ plot.elasticnet <- function(model, font.size = 20){
     plot(xy_data)
     abline(a=0, b=1, lty = 3)
 
+
     #詳細表示
     rsq <- paste0("R2 = ", round(summary(lm(xy_data))$r.squared,4))
     legend("topleft", legend = rsq)

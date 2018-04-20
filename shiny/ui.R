@@ -12,6 +12,7 @@ shinyUI(
                     "text/comma-separated-values,text/plain",
                     ".csv")
         ),
+
         tags$hr(),
         htmlOutput("ydata"),
         htmlOutput("xdata"),
