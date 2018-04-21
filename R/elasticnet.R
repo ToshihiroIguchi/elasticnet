@@ -142,7 +142,7 @@ ridge <- function(formula, data,
 
 
 #Elastic Netをplot関数で表示
-plot.elasticnet <- function(model, font.size = 20){
+plot.elasticnet <- function(model, font.size = 12){
 
   if(length(model$alpha_cvm[, 1]) > 1){
     #alpha vs cvmの結果表示
@@ -182,8 +182,14 @@ plot.elasticnet <- function(model, font.size = 20){
 #Elastic Netで予測
 predict.elasticnet <- function(model, data){
   x <- model.matrix(model$formula, data = data)[,-1]
-  ret <- predict(model$glmnet[[model$best_num]], x,
+
+  ret <- predict(model$glmnet, x,
                  s = model$lambda, type = "class")
+
+  #ret <- predict(model$glmnet[[model$best_num]], x,
+  #               s = model$lambda, type = "class")
+  #Thank you xzbwx!
+
   return(ret)
 }
 
