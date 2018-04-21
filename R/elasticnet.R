@@ -185,10 +185,7 @@ predict.elasticnet <- function(model, data){
 
   ret <- predict(model$glmnet, x,
                  s = model$lambda, type = "class")
-
-  #ret <- predict(model$glmnet[[model$best_num]], x,
-  #               s = model$lambda, type = "class")
-  #Thank you xzbwx!
+  #Thank you xzbwx!!!!
 
   return(ret)
 }
