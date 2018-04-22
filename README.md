@@ -55,6 +55,11 @@ A summary function displays a list of analysis results.
 Prediction can be done with the predict function.
 
     predict(result, iris)
+    
+### GUI
+
+Many people are not good at command by CUI.
+[You can also execute elasticnet with browser.](https://github.com/ToshihiroIguchi/elasticnet/tree/master/shiny)
 
 
 ### License 
