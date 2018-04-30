@@ -16,7 +16,9 @@ elasticnet <- function(formula, data,
 
   #目的変数を指定。
   #修正の余地があると思う。
-  y <- model.frame(formula,data=data)[,1]
+  #y <- model.frame(formula,data=data)[,1]
+
+  y <- as.vector(as.matrix(data[as.character(formula[2])]))
 
   #familyを自動選択。
   if(is.null(family)){
