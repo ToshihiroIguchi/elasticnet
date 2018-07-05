@@ -8,7 +8,11 @@ elasticnet <- function(formula, data,
                        nfolds = 5,
                        lambda = "lambda.1se",
                        alpha = NULL,
-                       alpha_step = 0.05){
+                       alpha_step = 0.05,
+                       seed = NULL){
+
+  #乱数種を設定
+  if(!is.null(seed) && is.numeric(seed)){set.seed(seed)}
 
   #説明変数を指定。カテゴリカル変数はダミー変数に変換される。
   #[,-1]としているのはinterceptを削除するため。

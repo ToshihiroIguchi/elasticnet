@@ -16,7 +16,7 @@ Also, the elasticnet package can automatically tune the best alpha and lambda.
 \usage{
 elasticnet(formula, data, family = NULL,
 offset = NULL, nfolds = 5, lambda = "lambda.1se",
-alpha = NULL, alpha_step = 0.05)
+alpha = NULL, alpha_step = 0.05, seed = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -48,6 +48,9 @@ alpha=1 is the lasso penalty, and alpha=0 the ridge penalty.
 Step in searching for parameter alpha.
 }
 
+\item{seed}{
+Random number generation.
+}
 
 }
 \details{

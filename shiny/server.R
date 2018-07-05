@@ -50,7 +50,8 @@ server <- function(input, output, session) {
     result <- reactive({elasticnet(chr2formula(y = input$ydata, x= input$xdata),
                                data = csv_file(),
                                lambda = input$lambda,
-                               alpha = get.alpha(input$method)
+                               alpha = get.alpha(input$method),
+                               seed = 108
                                )
       })
 
