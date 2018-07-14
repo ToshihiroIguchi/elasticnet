@@ -40,6 +40,12 @@ server <- function(input, output, session) {
       selectInput("lambda", "Penalty parameter lambda", choices = c("lambda.1se", "lambda.min"))
     })
 
+    #クロスバリデーションの分割数を選択
+    output$nfolds <- renderUI({
+      numericInput("nfolds", "K-fold cross varidation",
+                   value = 5, min = 3, step = 1)
+    })
+
   })
 
   observeEvent(input$submit, {
@@ -51,6 +57,7 @@ server <- function(input, output, session) {
                                data = csv_file(),
                                lambda = input$lambda,
                                alpha = get.alpha(input$method),
+                               nfolds = input$nfolds,
                                seed = 108
                                )
       })
