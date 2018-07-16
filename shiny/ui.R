@@ -20,6 +20,7 @@ shinyUI(
 
         htmlOutput("method"),
         htmlOutput("lambda"),
+        htmlOutput("nfolds"),
 
         actionButton("submit", "Analyze")
 
